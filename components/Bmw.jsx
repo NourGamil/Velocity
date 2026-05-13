@@ -5,7 +5,7 @@ import { useGLTF } from '@react-three/drei'
 // Removed the TypeScript interface for props
 export function Bmw({ carColor, ...props }) {
   // Path to your actual BMW file in the public folder
-  const { scene, nodes } = useGLTF('/models/bmw.glb', '/draco/')
+  const { scene, nodes } = useGLTF('models/bmw.glb', '/draco/')
 
   useLayoutEffect(() => {
     scene.traverse((obj) => {
@@ -27,4 +27,4 @@ export function Bmw({ carColor, ...props }) {
 }
 
 // Preloading ensures the model is cached for smoother transitions
-useGLTF.preload('/models/bmw.glb', '/draco/')
+useGLTF.preload('models/bmw.glb', '/draco/')

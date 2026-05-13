@@ -5,7 +5,7 @@ import { useGLTF } from '@react-three/drei'
 // 1. Remove the TS interface { carColor: string; ... }
 export function Urus({ carColor, ...props }) {
   // Ensure the path matches your actual file in /public/models/
-  const { scene, nodes } = useGLTF('/models/urus.glb', '/draco/')
+  const { scene, nodes } = useGLTF('models/urus.glb', '/draco/')
 
   useLayoutEffect(() => {
     // 2. Traversal: Removed 'as THREE.Mesh' type assertions
@@ -27,4 +27,4 @@ export function Urus({ carColor, ...props }) {
 }
 
 // Ensure preloading uses the same path as the component
-useGLTF.preload('/models/urus.glb', '/draco/')
+useGLTF.preload('models/urus.glb', '/draco/')
