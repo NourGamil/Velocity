@@ -18,7 +18,7 @@ import Footer from           "@/components/Main6/footer";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-export default function Home() {
+function Home() {
   const searchParams = useSearchParams();
   const scrollToTrigger = searchParams.get("scroll");
   const [isRouteLoading, setIsRouteLoading] = useState(true);
