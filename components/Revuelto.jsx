@@ -5,7 +5,7 @@ import { useGLTF } from '@react-three/drei'
 // Removed the TS type definitions from the props
 export function Revuelto({ carColor, ...props }) {
   // Ensure this path correctly points to your public folder
-  const { scene, nodes } = useGLTF('models/revuelto.glb', '/draco/')
+  const { scene, nodes } = useGLTF('models/revuelto.glb', 'draco/')
 
   useLayoutEffect(() => {
     scene.traverse((obj) => {
@@ -27,4 +27,4 @@ export function Revuelto({ carColor, ...props }) {
 }
 
 // Preloading helps prevent the car from "popping" in late
-useGLTF.preload('models/revuelto.glb', '/draco/')
+useGLTF.preload('models/revuelto.glb', 'draco/')
