@@ -2,17 +2,18 @@ import * as THREE from 'three'
 import React, { useLayoutEffect } from 'react'
 import { useGLTF } from '@react-three/drei'
 
-export function Revuelto({ carColor, ...props }: { carColor: string; [key: string]: any }) {
-  // Update this path to your actual Revuelto file
+// Removed the TS type definitions from the props
+export function Revuelto({ carColor, ...props }) {
+  // Ensure this path correctly points to your public folder
   const { scene, nodes } = useGLTF('/models/revuelto.glb', '/draco/')
 
   useLayoutEffect(() => {
     scene.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh) {
-        const mesh = obj as THREE.Mesh
-        const mat = mesh.material as THREE.MeshStandardMaterial
+      // Removed 'as THREE.Mesh'
+      if (obj.isMesh) {
+        const mat = obj.material
         
-        // IMPORTANT: Change 'Material_Name' to the actual car paint material name from Blender
+        // Target the specific paint material
         if (mat.name === 'Lamborghini_RevueltoReward_2024Paint_Material') {
           mat.color.set(carColor)
           mat.metalness = 0.1
@@ -25,4 +26,5 @@ export function Revuelto({ carColor, ...props }: { carColor: string; [key: strin
   return <primitive object={scene} {...props} />
 }
 
+// Preloading helps prevent the car from "popping" in late
 useGLTF.preload('/models/revuelto.glb', '/draco/')

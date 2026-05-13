@@ -2,17 +2,18 @@ import * as THREE from 'three'
 import React, { useLayoutEffect } from 'react'
 import { useGLTF } from '@react-three/drei'
 
-export function Urus({ carColor, ...props }: { carColor: string; [key: string]: any }) {
+// 1. Remove the TS interface { carColor: string; ... }
+export function Urus({ carColor, ...props }) {
+  // Ensure the path matches your actual file in /public/models/
   const { scene, nodes } = useGLTF('/models/urus.glb', '/draco/')
 
   useLayoutEffect(() => {
-
-    // 2. Traversal Backup: In case 'Material.027' is the name of the MATERIAL, not the MESH
+    // 2. Traversal: Removed 'as THREE.Mesh' type assertions
     scene.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh) {
-        const mesh = obj as THREE.Mesh
-        const mat = mesh.material as THREE.MeshStandardMaterial
+      if (obj.isMesh) {
+        const mat = obj.material
         
+        // Match the specific material name from your 3D model
         if (mat.name === 'LLamborghini_UrusPHEVRewardRecycled_2024Paint_Material1') {
           mat.color.set(carColor)
           mat.metalness = 0.1
@@ -25,8 +26,5 @@ export function Urus({ carColor, ...props }: { carColor: string; [key: string]: 
   return <primitive object={scene} {...props} />
 }
 
-useGLTF.preload('/models/urus-transformed.glb', '/draco/')
-
-
-
-
+// Ensure preloading uses the same path as the component
+useGLTF.preload('/models/urus.glb', '/draco/')

@@ -53,47 +53,38 @@ const CAR_DATA = {
 
 const CarCanvas = ({ carId, carColor }) => {
   const [isMobile, setIsMobile] = useState(false);
-  const [fpsLimit, setFpsLimit] = useState(60);
+  const [isLowEnd, setIsLowEnd] = useState(false);
 
   useEffect(() => {
-    // Media Query for Scale
     const mediaQuery = window.matchMedia("(max-width: 1024px)");
     setIsMobile(mediaQuery.matches);
     
-    // Performance Detection
-    const isLowEnd = 
+    const lowEnd = 
       (navigator.deviceMemory && navigator.deviceMemory <= 4) || 
       (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
-
-    if (isLowEnd) {
-      setFpsLimit(30);
-    }
+    setIsLowEnd(lowEnd);
 
     const handler = (e) => setIsMobile(e.matches);
     mediaQuery.addEventListener("change", handler);
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
-  // Limit GSAP Ticker FPS to save GPU on low-end devices
   useGSAP(() => {
-    gsap.ticker.fps(fpsLimit);
-  }, [fpsLimit]);
+    gsap.ticker.fps(isLowEnd ? 30 : 60);
+  }, [isLowEnd]);
 
   const carScale = isMobile ? 0.8 : 1.6;
 
   return (
-    <div className="relative w-full h-[40vh] md:h-[60vh] cursor-pointer overflow-visible z-0 ">
+    <div className="relative w-full h-[40vh] md:h-[60vh] cursor-pointer z-0">
       <Canvas 
-        shadows 
-        dpr={fpsLimit === 30 ? 1 : [1, 2]} 
+        shadows={!isLowEnd} 
+        dpr={isLowEnd ? 1 : [1, 2]} 
         camera={{ position: [-5, 0, 0], fov: 60 }}
-        gl={{ 
-            antialias: fpsLimit !== 30,
-            powerPreference: "high-performance" 
-        }}
+        gl={{ antialias: !isLowEnd, powerPreference: "high-performance", stencil: false }}
       >
         <Suspense fallback={null}>
-          <Stage intensity={0.3} environment="city" shadows="contact" adjustCamera={false} center>
+          <Stage intensity={0.3} environment={isLowEnd ? "neutral" : "city"} shadows={isLowEnd ? false : "contact"} adjustCamera={false} center>
             {carId === "urus" && <Urus carColor={carColor} scale={carScale} />}
             {carId === "revuelto" && <Revuelto carColor={carColor} scale={carScale} />}
             {carId === "bmw" && <Bmw carColor={carColor} scale={carScale} />}
@@ -109,8 +100,6 @@ const CarSection = ({ car, defaultColorIndex = 0 }) => {
   const [viewMode, setViewMode] = useState("colors");
   const [activeColor, setActiveColor] = useState(car.colors[defaultColorIndex]);
   const sectionRef = useRef();
-  const imgRef = useRef();
-  const aboutImgRef = useRef();
 
   useEffect(() => {
     let snappers = gsap.utils.toArray(".snapper");
@@ -134,122 +123,51 @@ const CarSection = ({ car, defaultColorIndex = 0 }) => {
 
     const sections = gsap.utils.toArray(".main");
     sections.forEach((section) => {
-      const fadeRights = section.querySelectorAll(".fadeRightAll");
-      const fadeLefts = section.querySelectorAll(".fadeLeftAll");
-      const fadeUps = section.querySelectorAll(".fadeUpAll");
-      const fadeDowns = section.querySelectorAll(".fadeDownAll");
-      const fadeScales = section.querySelectorAll(".fadeScaleAll");
-      const fadeblurOff = section.querySelectorAll(".fadeblurOffAll");
-
+      const fades = section.querySelectorAll(".fadeRightAll, .fadeLeftAll, .fadeUpAll, .fadeDownAll, .fadeScaleAll");
+      
       ScrollTrigger.create({
         trigger: section,
         start: "50% 90%",
-        onEnter: () => {
-          gsap.timeline()
-            .to(fadeRights, { opacity: 1, x: 100, stagger: 0.1, duration: 1 })
-            .to(fadeLefts, { opacity: 1, x: -100, stagger: 0.1, duration: 1 }, "-=1")
-            .to(fadeUps, { opacity: 1, y: -100, stagger: 0.1, duration: 1 }, "-=1")
-            .to(fadeDowns, { opacity: 1, y: 100, stagger: 0.1, duration: 1 }, "-=1")
-            .to(fadeScales, { opacity: 1, scale: 1, stagger: 0.1, duration: 1 }, "-=1")
-            .to(fadeblurOff, { filter: "blur(0px)", stagger: 0.1, duration: 1 }, "-=1");
-        },
-        onLeaveBack: () => {
-          gsap.timeline()
-            .to(fadeRights, { opacity: 0, x: -100, stagger: 0.1, duration: 1 })
-            .to(fadeLefts, { opacity: 0, x: 100, stagger: 0.1, duration: 1 }, "-=1")
-            .to(fadeUps, { opacity: 0, y: 100, stagger: 0.1, duration: 1 }, "-=1")
-            .to(fadeDowns, { opacity: 0, y: -100, stagger: 0.1, duration: 1 }, "-=1")
-            .to(fadeScales, { opacity: 0, scale: 0, stagger: 0.1, duration: 1 }, "-=1")
-            .to(fadeblurOff, { filter: "blur(10px)", stagger: 0.1, duration: 1 }, "-=1");
-        }
-      });
-
-      ScrollTrigger.create({
-        trigger: section,
-        start: "bottom 50%",
-        onEnter: () => {
-          gsap.timeline()
-            .to(fadeRights, { opacity: 0, x: -100, duration: 1 })
-            .to(fadeLefts, { opacity: 0, x: 100, duration: 1 }, "-=1")
-            .to(fadeUps, { opacity: 0, y: 100, duration: 1 }, "-=1")
-            .to(fadeDowns, { opacity: 0, y: -100, duration: 1 }, "-=1")
-            .to(fadeScales, { opacity: 0, scale: 0, stagger: 0.1, duration: 1 }, "-=1")
-            .to(fadeblurOff, { filter: "blur(10px)", stagger: 0.1, duration: 1 }, "-=1");
-        },
-        onLeaveBack: () => {
-          gsap.timeline()
-            .to(fadeRights, { opacity: 1, x: 100, duration: 1 })
-            .to(fadeLefts, { opacity: 1, x: -100, duration: 1 }, "-=1")
-            .to(fadeUps, { opacity: 1, y: -100, duration: 1 }, "-=1")
-            .to(fadeDowns, { opacity: 1, y: 100, duration: 1 }, "-=1")
-            .to(fadeScales, { opacity: 1, scale: 1, stagger: 0.1, duration: 1 }, "-=1")
-            .to(fadeblurOff, { filter: "blur(0px)", stagger: 0.1, duration: 1 }, "-=1");
-        }
+        onEnter: () => gsap.to(fades, { opacity: 1, x: 0, y: 0, scale: 1, stagger: 0.1, duration: 1 }),
+        onLeaveBack: () => gsap.to(fades, { opacity: 0, duration: 1 })
       });
     });
   }, []);
 
   useGSAP(() => {
-    gsap.to(sectionRef.current, {
-      background: viewMode === "about" ? "#0a0a0a" : activeColor.gradient,
-      duration: 0.8,
-      ease: "power2.out"
-    });
-    if (viewMode !== "about") {
-      gsap.fromTo(imgRef.current, { y: 30, opacity: 0, scale: 0.95 }, { y: 0, opacity: 1, scale: 1, duration: 0.8, ease: "expo.out" });
-    }
-    if (viewMode === "about") {
-      gsap.fromTo(aboutImgRef.current, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 1, ease: "back.out(1.2)", delay: 0.1 });
-      gsap.fromTo(".spec-item", { x: 100, opacity: 0 }, { x: 0, opacity: 1, stagger: 0.1, duration: 0.8, ease: "power4.out", delay: 0.4 });
-    }
-  }, { dependencies: [activeColor, viewMode] });
+    gsap.to(sectionRef.current, { background: viewMode === "about" ? "#0a0a0a" : activeColor.gradient, duration: 0.8 });
+  }, [activeColor, viewMode]);
 
-  const btnClass = (active) => `relative overflow-hidden w-full sm:w-64 px-10 py-5 text-[11px] tracking-[0.4em] uppercase font-black rounded-xl transition-all duration-500 transform active:scale-95 border border-white/10 backdrop-blur-md cursor-pointer ${active ? "bg-white text-black shadow-[0_20px_40px_rgba(255,255,255,0.2)] -translate-y-1" : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white hover:border-white/30 shadow-2xl"}`;
+  const btnClass = (active) => `relative w-full sm:w-64 px-10 py-5 text-[11px] tracking-[0.4em] uppercase font-black rounded-xl border border-white/10 backdrop-blur-md cursor-pointer transition-all duration-500 ${active ? "bg-white text-black shadow-2xl -translate-y-1" : "bg-white/5 text-white/50 hover:bg-white/10"}`;
 
   return (
-    <section id={`${car.id}`} ref={sectionRef} className="main w-full min-h-[100vh] flex flex-col relative overflow-hidden border-b border-white/5 pt-32 pb-16 px-6">
-      <h2 className="fadeScaleAll opacity-0 scale-0 absolute max-lg:top-[180px] max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:translate-y-[0] top-300px left-[50px] text-white/[0.06] text-[6rem] max-lg:text-[32vw] font-black tracking-tighter select-none z-0 pointer-events-none uppercase">
-        {car.name.split(' ')[0]}
+    <section id={`${car.id}`} ref={sectionRef} className="main w-full min-h-screen flex flex-col relative overflow-hidden pt-32 pb-16 px-6">
+      <h2 className="fadeScaleAll opacity-0 scale-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/[0.06] text-[20vw] font-black pointer-events-none uppercase">
+        {car.name}
       </h2>
-      <div className="z-10 flex flex-col items-center justify-between w-full max-w-7xl mx-auto flex-1 relative">
-        <div className={`absolute top-0 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3 transition-all duration-700 ease-in-out pointer-events-none ${viewMode === 'about' ? 'opacity-0 scale-75' : 'opacity-100 scale-100'}`}>
-          <div className="fadeDownAll relative top-[-100px] opacity-0 flex gap-4 p-3 bg-black/40 backdrop-blur-2xl rounded-full border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto">
+      <div className="z-10 flex flex-col items-center justify-between w-full max-w-7xl mx-auto flex-1">
+        <div className={`flex flex-col items-center gap-3 transition-opacity duration-700 ${viewMode === 'about' ? 'opacity-0' : 'opacity-100'}`}>
+          <div className="fadeDownAll flex gap-4 p-3 bg-black/40 backdrop-blur-2xl rounded-full border border-white/10">
             {car.colors.map((color, i) => (
-              <button key={i} onClick={() => setActiveColor(color)} className={`w-10 h-10 rounded-full transition-all duration-300 cursor-pointer ${activeColor.hex === color.hex ? 'scale-125 ring-2 ring-white ring-offset-4 ring-offset-black' : 'opacity-30 hover:opacity-100'}`} style={{ backgroundColor: color.hex }} />
+              <button key={i} onClick={() => setActiveColor(color)} className={`w-8 h-8 rounded-full ${activeColor.hex === color.hex ? 'ring-2 ring-white' : 'opacity-30'}`} style={{ backgroundColor: color.hex }} />
             ))}
           </div>
-          <p className="fadeDownAll relative top-[-100px] opacity-0 text-white/40 text-[9px] tracking-[0.6em] uppercase font-bold">{activeColor.name}</p>
         </div>
-        <div className={`fadeScaleAll relative scale-0 opacity-0 flex flex-col lg:flex-row items-center justify-center w-full gap-16 flex-1 pt-24 md:pt-16`}>
-          <div className={`relative flex justify-center items-center transition-all duration-1000 ease-expo ${viewMode === 'about' ? 'w-full lg:w-1/2' : 'w-full lg:w-3/4'}`}>
-            <div ref={imgRef} className="w-full">
-              {viewMode === "3d" ? (
-                  <CarCanvas key={car.id} carId={car.id} carColor={activeColor.hex} />
-              ) : (
-                 <img ref={viewMode === "about" ? aboutImgRef : null} src={viewMode === "about" ? car.aboutImg : activeColor.img} className="w-full max-w-[80vw] lg:max-w-full max-sm:mt-[-100px] object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,1)] relative z-20 cursor-pointer" alt={car.name} />
-              )}
-            </div>
-          </div>
-          {viewMode === "about" && (
-            <div className="w-full lg:w-1/3 flex flex-col gap-6 z-20 relative">
-              <h3 className="text-white/40 text-xs font-black tracking-[0.8em] uppercase mb-4">Core Architecture</h3>
-              {car.specs.map((text, i) => (
-                <div key={i} className="spec-item flex items-center gap-6 group">
-                  <span className="text-white/20 font-mono text-sm">0{i + 1}</span>
-                  <div className="h-[1px] flex-1 bg-white/10 group-hover:bg-white/40 transition-colors"></div>
-                  <span className="text-white text-sm font-medium tracking-widest">{text}</span>
-                </div>
-              ))}
-            </div>
-          )}
+        
+        <div className="w-full flex flex-col lg:flex-row items-center justify-center gap-16 flex-1">
+           <div className="w-full lg:w-3/4">
+              {viewMode === "3d" ? <CarCanvas carId={car.id} carColor={activeColor.hex} /> : <img src={viewMode === "about" ? car.aboutImg : activeColor.img} className="w-full object-contain" alt={car.name} />}
+           </div>
+           {viewMode === "about" && (
+             <div className="lg:w-1/3 flex flex-col gap-4">
+               {car.specs.map((s, i) => <p key={i} className="text-white text-sm tracking-widest">{s}</p>)}
+             </div>
+           )}
         </div>
-        <div className="fadeUpAll relative top-[100px] opacity-0 flex flex-row gap-8 mb-4 z-30 relative pointer-events-auto">
-          <button onClick={() => setViewMode(viewMode === "3d" ? "colors" : "3d")} className={btnClass(viewMode === "3d")}>
-            {viewMode === "3d" ? "Show" : "3D"}
-          </button>
-          <button onClick={() => setViewMode(viewMode === "about" ? "colors" : "about")} className={btnClass(viewMode === "about")}>
-            {viewMode === "about" ? "Show" : "SPECS"}
-          </button>
+
+        <div className="fadeUpAll flex flex-row gap-8 mb-4">
+          <button onClick={() => setViewMode(viewMode === "3d" ? "colors" : "3d")} className={btnClass(viewMode === "3d")}>3D View</button>
+          <button onClick={() => setViewMode(viewMode === "about" ? "colors" : "about")} className={btnClass(viewMode === "about")}>Specs</button>
         </div>
       </div>
     </section>
@@ -259,25 +177,25 @@ const CarSection = ({ car, defaultColorIndex = 0 }) => {
 const Models = () => {
   const searchParams = useSearchParams();
   const carId = searchParams.get("car");
+
   useEffect(() => {
+    // If a car ID is present in the URL, scroll to it after a short delay 
+    // to allow the global loader from layout.js to start its work.
     if (carId) {
-      const timer = setTimeout(() => {
-        gsap.to(window, { duration: 1.5, scrollTo: { y: `#${carId}`}, ease: "power4.inOut" });
-      }, 500);
-      return () => clearTimeout(timer);
+       setTimeout(() => {
+         gsap.to(window, { duration: 1.5, scrollTo: `#${carId}`, ease: "power4.inOut" });
+       }, 1500); 
     }
   }, [carId]);
-  const container = useRef();
+
   return (
-    <div className="">
+    <div className="bg-black">
       <Header />
-      <main ref={container}> 
-        <div className="snapper"><CarSection car={CAR_DATA.urus} defaultColorIndex={2} /></div>
-        <div className="snapper"><CarSection car={CAR_DATA.revuelto} defaultColorIndex={1} /></div>
-        <div className="snapper"><CarSection car={CAR_DATA.bmw} defaultColorIndex={0} /></div>
-        <section className="w-full min-h-[100vh] flex items-center justify-center bg-black">
-          <Footer />
-        </section>
+      <main> 
+        <div className="snapper"><CarSection car={CAR_DATA.urus} /></div>
+        <div className="snapper"><CarSection car={CAR_DATA.revuelto} /></div>
+        <div className="snapper"><CarSection car={CAR_DATA.bmw} /></div>
+        <Footer />
       </main>
     </div>
   );

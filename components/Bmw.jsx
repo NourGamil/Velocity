@@ -2,17 +2,18 @@ import * as THREE from 'three'
 import React, { useLayoutEffect } from 'react'
 import { useGLTF } from '@react-three/drei'
 
-export function Bmw({ carColor, ...props }: { carColor: string; [key: string]: any }) {
-  // Update this path to your actual BMW file
+// Removed the TypeScript interface for props
+export function Bmw({ carColor, ...props }) {
+  // Path to your actual BMW file in the public folder
   const { scene, nodes } = useGLTF('/models/bmw.glb', '/draco/')
 
   useLayoutEffect(() => {
     scene.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh) {
-        const mesh = obj as THREE.Mesh
-        const mat = mesh.material as THREE.MeshStandardMaterial
+      // Removed 'as THREE.Mesh'
+      if (obj.isMesh) {
+        const mat = obj.material
         
-        // IMPORTANT: Change 'Material_Name' to the actual car paint material name from Blender
+        // Target the specific BMW paint material
         if (mat.name === 'CSR2_CarPaint.002') {
           mat.color.set(carColor)
           mat.metalness = 0.1
@@ -25,4 +26,5 @@ export function Bmw({ carColor, ...props }: { carColor: string; [key: string]: a
   return <primitive object={scene} {...props} />
 }
 
+// Preloading ensures the model is cached for smoother transitions
 useGLTF.preload('/models/bmw.glb', '/draco/')

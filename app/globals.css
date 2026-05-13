@@ -82,3 +82,17 @@ body {
     transform: rotate(360deg);
   }
 }
+
+
+
+body:has(.loader-wrapper) {
+  overflow: hidden;
+}
+
+@keyframes load {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+.animate-load {
+  animation: load 1.5s ease-in-out forwards;
+}
