@@ -1,212 +1,183 @@
 "use client";
-import { useState, useRef, Suspense, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { Canvas } from "@react-three/fiber";
-import { Stage, OrbitControls } from "@react-three/drei";
-import Header from "@/components/Main1/header";
-import Footer from "@/components/Main6/footer";
-import { Urus } from "@/components/Urus";
-import { Revuelto } from "@/components/Revuelto";
-import { Bmw } from "@/components/Bmw";
+import { useRef, useState, useEffect } from 'react';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+gsap.registerPlugin(ScrollToPlugin);
 
-const CAR_DATA = {
-  urus: {
-    id: "urus",
-    name: "URUS",
-    specs: ["4.0L V8 Twin-Turbo", "650 CV / 478 kW", "3.6s (0-100 km/h)", "305 km/h Top Speed", "850 Nm Torque"],
-    colors: [
-      { name: "Rosso Mars", hex: "#a30000", img: "images/urus3.webp", gradient: "radial-gradient(circle at center, #4b0000 0%, #000000cc 100%)" },
-      { name: "Blu Astraeus", hex: "#0c1731", img: "images/urus2.webp", gradient: "radial-gradient(circle at center, #061025 0%, #000000cc 100%)" },
-      { name: "Bianco Monocerus", hex: "#ddddde", img: "images/urus1.webp", gradient: "radial-gradient(circle at center, #333333 0%, #000000cc 100%)" },
-    ],
-    aboutImg: "images/urus4.webp"
-  },
-  revuelto: {
-    id: "revuelto",
-    name: "REV.",
-    specs: ["V12 Hybrid Plug-in", "1015 CV Total Power", "2.5s (0-100 km/h)", "> 350 km/h Top Speed", "Electric 4WD"],
-    colors: [
-      { name: "Rosso Efesto", hex: "#8b0000", img: "images/rev3.webp", gradient: "radial-gradient(circle at center, #3a0000 0%, #000000cc 100%)" },
-      { name: "Blu Mehetaris", hex: "#001f3f", img: "images/rev2.webp", gradient: "radial-gradient(circle at center, #000a1a 0%, #000000cc 100%)" },
-      { name: "Bianco Isis", hex: "#ffffff", img: "images/rev1.webp", gradient: "radial-gradient(circle at center, #222222 0%, #000000cc 100%)" },
-    ],
-    aboutImg: "images/rev4.webp"
-  },
-  bmw: {
-    id: "bmw",
-    name: "M4 COMPETITION",
-    specs: ["M TwinPower Turbo 6-Cyl", "503 Horsepower", "3.4s (0-60 mph)", "479 lb-ft Torque", "8-speed M Steptronic"],
-    colors: [
-      { name: "Toronto Red", hex: "#cc0000", img: "images/bmw3.webp", gradient: "radial-gradient(circle at center, #410000 0%, #000000cc 100%)" },
-      { name: "Portimao Blue", hex: "#154d85", img: "images/bmw2.webp", gradient: "radial-gradient(circle at center, #0a2542 0%, #000000cc 100%)" },
-      { name: "Alpine White", hex: "#f0f0f0", img: "images/bmw1.webp", gradient: "radial-gradient(circle at center, #2a2a2a 0%, #000000cc  100%)" },
-    ],
-    aboutImg: "images/bmw4.webp"
-  }
-};
-
-const CarCanvas = ({ carId, carColor }) => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isLowEnd, setIsLowEnd] = useState(false);
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [userInput, setUserInput] = useState("");
+  const [messages, setMessages] = useState([
+    { role: 'system', text: "L.A.U.N.C.H Assistant active. How can we assist your journey?" }
+  ]);
+  
+  const container = useRef();
+  const chatEndRef = useRef(null);
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 1024px)");
-    setIsMobile(mediaQuery.matches);
+    const handleOpenContact = () => {
+      if (!isContactOpen) toggleContact();
+    };
+    window.addEventListener("openContact", handleOpenContact);
+    return () => window.removeEventListener("openContact", handleOpenContact);
+  }, [isContactOpen]);
+
+  const toggleMenu = () => {
+    if (isContactOpen) toggleContact();
+    const tl = gsap.timeline({ defaults: { ease: "expo.out", duration: 1.2 } });
     
-    const lowEnd = 
-      (navigator.deviceMemory && navigator.deviceMemory <= 4) || 
-      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
-    setIsLowEnd(lowEnd);
+    if (!isMenuOpen) {
+      tl.to(".headerNav", { x: "0%", opacity: 1, display: "flex" })
+        .from(".nav-link-item", { y: 30, opacity: 0, stagger: 0.1 }, "-=0.8");
+    } else {
+      tl.to(".headerNav", { x: "-100%", opacity: 0 });
+    }
+    setIsMenuOpen(!isMenuOpen);
+  };
 
-    const handler = (e) => setIsMobile(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
+  const toggleContact = () => {
+    if (isMenuOpen) toggleMenu();
+    const tl = gsap.timeline({ defaults: { ease: "expo.out", duration: 1.2 } });
+    
+    if (!isContactOpen) {
+      tl.to(".contactUs", { x: "0%", opacity: 1, display: "flex" })
+        .from(".chat-anim", { opacity: 0, y: 20, stagger: 0.1 }, "-=0.7");
+    } else {
+      tl.to(".contactUs", { x: "100%", opacity: 0 });
+    }
+    setIsContactOpen(!isContactOpen);
+  };
 
-  useGSAP(() => {
-    gsap.ticker.fps(isLowEnd ? 30 : 60);
-  }, [isLowEnd]);
-
-  const carScale = isMobile ? 0.8 : 1.6;
+  const handleSendMessage = () => {
+    if (!userInput.trim()) return;
+    setMessages(prev => [...prev, { role: 'user', text: userInput }]);
+    setUserInput("");
+    setTimeout(() => {
+      setMessages(prev => [...prev, { 
+        role: 'system', 
+        text: "A specialist will review your request shortly." 
+      }]);
+    }, 1200);
+  };
 
   return (
-    <div className="relative w-full h-[40vh] md:h-[60vh] cursor-pointer z-0">
-      <Canvas 
-        shadows={!isLowEnd} 
-        dpr={isLowEnd ? 1 : [1, 2]} 
-        camera={{ position: [-5, 0, 0], fov: 60 }}
-        gl={{ antialias: !isLowEnd, powerPreference: "high-performance", stencil: false }}
-      >
-        <Suspense fallback={null}>
-          <Stage intensity={0.3} environment={isLowEnd ? "neutral" : "city"} shadows={isLowEnd ? false : "contact"} adjustCamera={false} center>
-            {carId === "urus" && <Urus carColor={carColor} scale={carScale} />}
-            {carId === "revuelto" && <Revuelto carColor={carColor} scale={carScale} />}
-            {carId === "bmw" && <Bmw carColor={carColor} scale={carScale} />}
-          </Stage>
-        </Suspense>
-        <OrbitControls enableZoom={true} minPolarAngle={Math.PI / 2.5} maxPolarAngle={Math.PI / 2} target={[0, 0, 0]} makeDefault />
-      </Canvas>
-    </div>
-  );
-};
-
-const CarSection = ({ car, defaultColorIndex = 0 }) => {
-  const [viewMode, setViewMode] = useState("colors");
-  const [activeColor, setActiveColor] = useState(car.colors[defaultColorIndex]);
-  const sectionRef = useRef();
-
-  useEffect(() => {
-    let snappers = gsap.utils.toArray(".snapper");
-    gsap.to(snappers, {
-      ease: "none",
-      duration: 0.1,
-      scrollTrigger: {
-        pin: true,
-        scrub: 1,
-        snap: { snapTo: 1 / (snappers.length - 1), directional: false, inertia: true },
-      }
-    });
-
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: "top bottom",
-      end: "bottom top",
-      onLeave: () => setViewMode("colors"),
-      onLeaveBack: () => setViewMode("colors"),
-    });
-
-    const sections = gsap.utils.toArray(".main");
-    sections.forEach((section) => {
-      const fades = section.querySelectorAll(".fadeRightAll, .fadeLeftAll, .fadeUpAll, .fadeDownAll, .fadeScaleAll");
+    <header ref={container} className="fixed top-0 w-full z-[1000] border-b border-white/5 bg-black/20 text-white backdrop-blur-md">
+      <div className="flex justify-between items-center px-6 lg:px-[5vw] h-[80px] ">
       
-      ScrollTrigger.create({
-        trigger: section,
-        start: "50% 90%",
-        onEnter: () => gsap.to(fades, { opacity: 1, x: 0, y: 0, scale: 1, stagger: 0.1, duration: 1 }),
-        onLeaveBack: () => gsap.to(fades, { opacity: 0, duration: 1 })
-      });
-    });
-  }, []);
+        <button onClick={toggleMenu} className="group flex items-center gap-6 cursor-pointer">
+          <div className="relative w-8 h-6 pt-[2px] flex flex-col justify-between">
+            <span className={`h-[2px] w-full bg-white transition-all duration-500 ${isMenuOpen ? 'rotate-[45deg] translate-y-[9px]' : ''}`}></span>
+            <span className={`h-[2px] w-full bg-white transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+            <span className={`h-[2px] w-full bg-white transition-all duration-500 ${isMenuOpen ? 'rotate-[-45deg] -translate-y-[9px]' : ''}`}></span>
+          </div>
+          <span className="hidden lg:block text-[10px] tracking-[0.6em] font-light uppercase opacity-80 group-hover:text-[#cf4b00] transition-colors">Navigate</span>
+        </button>
 
-  useGSAP(() => {
-    gsap.to(sectionRef.current, { background: viewMode === "about" ? "#0a0a0a" : activeColor.gradient, duration: 0.8 });
-  }, [activeColor, viewMode]);
+        <Link href="/" className="absolute left-1/2 -translate-x-1/2 group">
+          <img src="images/swWhite.svg" className="w-8 group-hover:scale-110 transition-transform duration-700" alt="Logo" />
+        </Link>
 
-  const btnClass = (active) => `relative w-full sm:w-64 px-10 py-5 text-[11px] tracking-[0.4em] uppercase font-black rounded-xl border border-white/10 backdrop-blur-md cursor-pointer transition-all duration-500 ${active ? "bg-white text-black shadow-2xl -translate-y-1" : "bg-white/5 text-white/50 hover:bg-white/10"}`;
+        <button onClick={toggleContact} className="flex items-center gap-4 group cursor-pointer">
+          <span className="hidden lg:block text-[10px] tracking-[0.6em] font-light uppercase opacity-80 group-hover:text-[#cf4b00] transition-opacity">Connect</span>
+          <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-[#cf4b00] transition-colors">
+             <img src="images/message-reply.svg" className="w-4 " alt="Chat" />
+          </div>
+        </button>
+      </div>
+
+      <nav className="headerNav fixed top-0 left-0 w-full lg:w-[450px] h-[100dvh] bg-black/95 backdrop-blur-[40px] border-r border-white/5 p-12 lg:p-24 flex flex-col justify-center shadow-[20px_0_50px_rgba(0,0,0,0.8)] -translate-x-full opacity-0">
+        <div className="absolute top-8 right-8 lg:right-12">
+          <button onClick={toggleMenu} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+            <span className="text-[10px]">✕</span>
+          </button>
+        </div>
+
+        <p className="text-[10px] tracking-[1em] text-white/60 mb-12 uppercase">Navigation System</p>
+        <ul className="space-y-10 w-[300px]">
+
+{['Home', 'Gallery', 'About', 'Models', 'Models Explorer', 'Events'].map((item) => {
+  let href = "/";
+  
+  if (item === "Models Explorer") {
+    href = "/Models";
+  } else if (item !== "Home") {
+    // We use a query param instead of a hash for cleaner control
+    const sectionId = item.toLowerCase().replace(/\s+/g, '-');
+    href = `/?scroll=${sectionId}`;
+  }
 
   return (
-    <section id={`${car.id}`} ref={sectionRef} className="main w-full min-h-screen flex flex-col relative overflow-hidden pt-32 pb-16 px-6">
-      <h2 className="fadeScaleAll opacity-0 scale-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/[0.06] text-[20vw] font-black pointer-events-none uppercase">
-        {car.name}
-      </h2>
-      <div className="z-10 flex flex-col items-center justify-between w-full max-w-7xl mx-auto flex-1">
-        <div className={`flex flex-col items-center gap-3 transition-opacity duration-700 ${viewMode === 'about' ? 'opacity-0' : 'opacity-100'}`}>
-          <div className="fadeDownAll flex gap-4 p-3 bg-black/40 backdrop-blur-2xl rounded-full border border-white/10">
-            {car.colors.map((color, i) => (
-              <button key={i} onClick={() => setActiveColor(color)} className={`w-8 h-8 rounded-full ${activeColor.hex === color.hex ? 'ring-2 ring-white' : 'opacity-30'}`} style={{ backgroundColor: color.hex }} />
-            ))}
+    <li key={item} className="nav-link-item group overflow-hidden">
+      <Link 
+        href={href} 
+        onClick={toggleMenu} // Just close menu and let Link handle the route
+        className="block cursor-pointer"
+      >
+        <span className="block text-3xl lg:text-4xl w-fit font-black italic tracking-tighter transition-all duration-500 group-hover:text-[#cf4b00] group-hover:translate-x-4 uppercase">
+          {item}
+        </span>
+      </Link>
+    </li>
+  );
+})}
+        </ul>
+      </nav>
+
+      <aside className="contactUs fixed top-0 right-0 w-full lg:w-[400px] h-[100dvh] bg-black/90 backdrop-blur-[30px] border-l border-white/5 p-8 lg:p-12 flex flex-col shadow-[-20px_0_50px_rgba(0,0,0,0.8)] translate-x-full opacity-0 overflow-hidden">
+        <div className="flex justify-between items-center mb-12 chat-anim overflow-hidden">
+          <div className="flex flex-col">
+            <h2 className="text-xs tracking-[0.5em] font-bold text-white/80 uppercase">Assistant</h2>
+            <p className="text-[10px] text-[#cf4b00] animate-pulse uppercase">Online</p>
+          </div>
+          <button onClick={toggleContact} className="w-10 h-10  rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+            <span className="text-[10px]">✕</span>
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto space-y-6 pr-4 chat-anim scrollbar-hide">
+          {messages.map((msg, i) => (
+            <div key={i} className={`flex flex-col overflow-hidden h-auto ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+              <div className="text-[8px] mb-2 uppercase tracking-widest opacity-30 font-mono">
+                {msg.role === 'user' ? '// Client' : '// System'}
+              </div>
+              <div className={`p-4 text-[11px] tracking-wide leading-relaxed max-w-[90%] border ${
+                msg.role === 'user' 
+                ? 'bg-white text-black border-white' 
+                : 'bg-white/5 text-white/70 border-white/10 backdrop-blur-sm'
+              }`}>
+                {msg.text}
+              </div>
+            </div>
+          ))}
+          <div ref={chatEndRef} />
+        </div>
+
+        <div className="mt-8 chat-anim">
+          <div className="relative border-b border-white/60  focus-within:border-[#cf4b00] transition-colors ">
+            <textarea 
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
+              placeholder="INPUT MESSAGE..."
+              className="w-full bg-transperant outline-none text-[10px] tracking-[0.3em] resize-none  uppercase placeholder:opacity-80"
+            />
+            <button onClick={handleSendMessage} className="absolute right-[-20px] opacity-30 hover:opacity-100 transition-opacity">
+                <img src="images/send.svg" className="w-4 invert" alt="Send" />
+            </button>
           </div>
         </div>
-        
-        <div className="w-full flex flex-col lg:flex-row items-center justify-center gap-16 flex-1">
-           <div className="w-full lg:w-3/4">
-              {viewMode === "3d" ? <CarCanvas carId={car.id} carColor={activeColor.hex} /> : <img src={viewMode === "about" ? car.aboutImg : activeColor.img} className="w-full object-contain" alt={car.name} />}
-           </div>
-           {viewMode === "about" && (
-             <div className="lg:w-1/3 flex flex-col gap-4">
-               {car.specs.map((s, i) => <p key={i} className="text-white text-sm tracking-widest">{s}</p>)}
-             </div>
-           )}
-        </div>
-
-        <div className="fadeUpAll flex flex-row gap-8 mb-4">
-          <button onClick={() => setViewMode(viewMode === "3d" ? "colors" : "3d")} className={btnClass(viewMode === "3d")}>3D View</button>
-          <button onClick={() => setViewMode(viewMode === "about" ? "colors" : "about")} className={btnClass(viewMode === "about")}>Specs</button>
-        </div>
-      </div>
-    </section>
+      </aside>
+    </header>
   );
 };
 
-// Separated the content logic from the export
-const ModelsContent = () => {
-  const searchParams = useSearchParams();
-  const carId = searchParams.get("car");
-
-  useEffect(() => {
-    if (carId) {
-       setTimeout(() => {
-         gsap.to(window, { duration: 1.5, scrollTo: `#${carId}`, ease: "power4.inOut" });
-       }, 1500); 
-    }
-  }, [carId]);
-
-  return (
-    <div className="bg-black">
-      <Header />
-      <main> 
-        <div className="snapper"><CarSection car={CAR_DATA.urus} /></div>
-        <div className="snapper"><CarSection car={CAR_DATA.revuelto} /></div>
-        <div className="snapper"><CarSection car={CAR_DATA.bmw} /></div>
-        <Footer />
-      </main>
-    </div>
-  );
-};
-
-// This is the exported component that wraps the content in Suspense
-const Models = () => {
-  return (
-    <Suspense fallback={<div className="bg-black min-h-screen flex items-center justify-center text-white">Initializing...</div>}>
-      <ModelsContent />
-    </Suspense>
-  );
-};
-
-export default Models;
+export default Header;

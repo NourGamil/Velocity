@@ -174,6 +174,7 @@ const CarSection = ({ car, defaultColorIndex = 0 }) => {
   );
 };
 
+// Separated the content logic from the export
 const ModelsContent = () => {
   const searchParams = useSearchParams();
   const carId = searchParams.get("car");
@@ -199,11 +200,13 @@ const ModelsContent = () => {
   );
 };
 
+// This is the exported component that wraps the content in Suspense
 const Models = () => {
   return (
-    <Suspense fallback={<div className="bg-black min-h-screen" />}>
+    <Suspense fallback={<div className="bg-black min-h-screen flex items-center justify-center text-white">Initializing...</div>}>
       <ModelsContent />
     </Suspense>
   );
 };
+
 export default Models;
