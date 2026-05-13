@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "components/Main1/header.jsx", "components/Main1/intro.jsx", "components/Main1/videoBg.jsx", "app/Models/page.jsx", "app/page.jsx", "app/layout.jsx", "components/Urus.jsx", "components/Revuelto.tsx", "components/Bmw.jsx"  ],
+, "components/Main1/header.jsx", "components/Main1/intro.jsx", "components/Main1/videoBg.jsx", "app/Models/page.jsx", "app/page.jsx", "app/layout.jsx", "components/Urus.jsx", "components/Revuelto.jsx", "components/Bmw.jsx"  ],
   "exclude": ["node_modules"]
 }

@@ -23,7 +23,7 @@ export default function Loader() {
   if (!show) return null;
 
   return (
-    <div className="loader-wrapper fixed inset-0 z-[9999] flex items-center justify-center bg-black">
+    <div className="loader-wrapper fixed inset-0 z-[9999] w-[100vw] h-[100vh] flex items-center justify-center bg-black">
       <div className="flex flex-col items-center">
         <div className="w-48 h-[1px] bg-white/20 relative overflow-hidden">
           {/* Ensure 'animate-load' is defined in your globals.css */}
