@@ -203,7 +203,7 @@ const ModelsContent = () => {
 // This is the exported component that wraps the content in Suspense
 const Models = () => {
   return (
-    <Suspense >
+    <Suspense fallback={<div className="bg-black min-h-screen" />}>
       <ModelsContent />
     </Suspense>
   );

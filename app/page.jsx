@@ -147,7 +147,7 @@ function Home() {
 export default function Page() {
   return (
     // The fallback can be a simple loader or an empty div
-    <Suspense >
+    <Suspense fallback={<div className="bg-black min-h-screen" />}>
       <Home />
     </Suspense>
   );
