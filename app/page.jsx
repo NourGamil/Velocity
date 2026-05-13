@@ -128,7 +128,7 @@ function Home() {
   }, { scope: mainRef, dependencies: [scrollToTrigger, isRouteLoading] });
 
   return (
-    <div ref={mainRef} className="webSite bg-black min-h-screen">
+    <div ref={mainRef} className="webSite">
 
       {/* Global Elements */}
       <Header />

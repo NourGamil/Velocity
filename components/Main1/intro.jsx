@@ -27,7 +27,7 @@ const Intro = () => {
       className="main relative snapper w-[full] h-[100vh] flex flex-col max-lg:justify-center justify-end lg:pb-[10vh] lg:pb-[0vh]  text-white overflow-hidden "
     >
 
-      {/* <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" /> */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
       
 
       <div className="hero-line absolute left-0 bottom-[15%] w-full h-[1px] bg-white/10 z-0" />

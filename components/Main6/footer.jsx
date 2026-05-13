@@ -149,15 +149,17 @@ const Footer = () => {
           </a> — All Rights Reserved
         </p>
 
-        <div className="footer-reveal flex items-center gap-3">
-          <div className="group relative w-[40px] h-[30px] sm:w-10 sm:h-10 bg-black rounded-full flex items-center justify-center overflow-hidden transition-transform duration-500 hover:rotate-[360deg]">
-             <img src="images/swDark.svg" alt="Logo" className="w-5 h-5 invert relative z-10" />
-             <div className="absolute inset-0 bg-[#cf4b00] translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-          </div>
-          <div className="flex flex-col ">
-            <span className="text-[10px] font-bold tracking-[0.4em] uppercase ">VELOCITY</span>
-            <span className="text-[8px] tracking-[0.1em] text-black/30 uppercase">Precision Performance</span>
-          </div>
+        <div className="">
+          <Link href="https://nourgamil.github.io/Velocity/" className="cursor-pointer footer-reveal flex items-center gap-3">
+            <div className="group relative w-[40px] h-[30px] sm:w-10 sm:h-10 bg-black rounded-full flex items-center justify-center overflow-hidden transition-transform duration-500 hover:rotate-[360deg]">
+              <img src="images/swDark.svg" alt="Logo" className="w-5 h-5 invert relative z-10" />
+              <div className="absolute inset-0 bg-[#cf4b00] translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+            </div>
+            <div className="flex flex-col ">
+              <span className="text-[10px] font-bold tracking-[0.4em] uppercase ">VELOCITY</span>
+              <span className="text-[8px] tracking-[0.1em] text-black/30 uppercase">Precision Performance</span>
+            </div>
+          </Link>
         </div>
       </div>
 

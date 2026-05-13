@@ -82,7 +82,7 @@ const Header = () => {
           <span className="hidden lg:block text-[10px] tracking-[0.6em] font-light uppercase opacity-80 group-hover:text-[#cf4b00] transition-colors">Navigate</span>
         </button>
 
-        <Link href="/" className="absolute left-1/2 -translate-x-1/2 group">
+        <Link href="https://nourgamil.github.io/Velocity/" className="absolute left-1/2 -translate-x-1/2 group">
           <img src="images/swWhite.svg" className="w-8 group-hover:scale-110 transition-transform duration-700" alt="Logo" />
         </Link>
 
@@ -138,7 +138,7 @@ const Header = () => {
             <h2 className="text-xs tracking-[0.5em] font-bold text-white/80 uppercase">Assistant</h2>
             <p className="text-[10px] text-[#cf4b00] animate-pulse uppercase">Online</p>
           </div>
-          <button onClick={toggleContact} className="w-10 h-10  rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+          <button onClick={toggleContact} className="w-10 h-10  rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all cursor-pointer">
             <span className="text-[10px]">✕</span>
           </button>
         </div>
