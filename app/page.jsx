@@ -1,12 +1,11 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useSearchParams } from "next/navigation";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin"; 
-
 // Components
 import VideoBackground from  "@/components/Main1/videoBg";
 import Header from           "@/components/Main1/header";
@@ -144,5 +143,13 @@ export default function Home() {
       <Events />
       <Footer />
     </div>
+  );
+}
+export default function Page() {
+  return (
+    // The fallback can be a simple loader or an empty div
+    <Suspense >
+      <Home />
+    </Suspense>
   );
 }
