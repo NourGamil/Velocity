@@ -95,8 +95,8 @@ const Header = () => {
       </div>
 
       <nav className="headerNav fixed top-0 left-0 w-full lg:w-[450px] h-[100dvh] bg-black/95 backdrop-blur-[40px] border-r border-white/5 p-12 lg:p-24 flex flex-col justify-center shadow-[20px_0_50px_rgba(0,0,0,0.8)] -translate-x-full opacity-0">
-        <div className="absolute top-8 right-8 lg:right-12 cursor-pointer">
-          <button onClick={toggleMenu} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+        <div className="absolute top-8 right-8 lg:right-12 ">
+          <button onClick={toggleMenu} className="w-10 h-10 cursor-pointer rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
             <span className="text-[10px]">✕</span>
           </button>
         </div>

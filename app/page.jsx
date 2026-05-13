@@ -17,7 +17,6 @@ import Events from           "@/components/Main5/events";
 import Footer from           "@/components/Main6/footer";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-
 function Home() {
   const searchParams = useSearchParams();
   const scrollToTrigger = searchParams.get("scroll");
