@@ -174,13 +174,11 @@ const CarSection = ({ car, defaultColorIndex = 0 }) => {
   );
 };
 
-const Models = () => {
+const ModelsContent = () => {
   const searchParams = useSearchParams();
   const carId = searchParams.get("car");
 
   useEffect(() => {
-    // If a car ID is present in the URL, scroll to it after a short delay 
-    // to allow the global loader from layout.js to start its work.
     if (carId) {
        setTimeout(() => {
          gsap.to(window, { duration: 1.5, scrollTo: `#${carId}`, ease: "power4.inOut" });
@@ -201,4 +199,11 @@ const Models = () => {
   );
 };
 
+const Models = () => {
+  return (
+    <Suspense fallback={<div className="bg-black min-h-screen" />}>
+      <ModelsContent />
+    </Suspense>
+  );
+};
 export default Models;
