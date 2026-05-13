@@ -255,10 +255,6 @@ const CarSection = ({ car, defaultColorIndex = 0 }) => {
   );
 };
 
-/* 
-  NEW COMPONENT: This holds the useSearchParams logic 
-  and the main page structure.
-*/
 const ModelsContent = () => {
   const searchParams = useSearchParams();
   const carId = searchParams.get("car");
@@ -288,10 +284,6 @@ const ModelsContent = () => {
   );
 };
 
-/* 
-  EXPORT: The main component now simply wraps the content 
-  in a Suspense boundary to fix the build error.
-*/
 const Models = () => {
   return (
     <Suspense fallback={<div className="bg-black min-h-screen" />}>
